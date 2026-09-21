@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Client {
@@ -12,8 +14,14 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "name é obrigatório")
     private String name;
+
+    @NotBlank(message = "email é obrigatório")
+    @Email(message = "email inválido")
     private String email;
+
+    @NotBlank(message = "phone é obrigatório")
     private String phone;
 
     public Client() {

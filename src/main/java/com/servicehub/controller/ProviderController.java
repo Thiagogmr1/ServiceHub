@@ -1,7 +1,9 @@
 package com.servicehub.controller;
 
 import com.servicehub.model.Provider;
-import com.servicehub.repository.ProviderRepository;
+import com.servicehub.service.ProviderService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,35 +12,36 @@ import java.util.List;
 @RequestMapping("/providers")
 public class ProviderController {
 
-    private final ProviderRepository providerRepository;
+    private final ProviderService providerService;
 
-    public ProviderController(ProviderRepository providerRepository) {
-        this.providerRepository = providerRepository;
+    public ProviderController(ProviderService providerService) {
+        this.providerService = providerService;
     }
 
     @GetMapping
     public List<Provider> findAll() {
-        return providerRepository.findAll();
+        return providerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Provider findById(@PathVariable Long id) {
-        return providerRepository.findById(id).orElse(null);
+    public ResponseEntity<Provider> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(providerService.findById(id));
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Provider create(@RequestBody Provider provider) {
-        return providerRepository.save(provider);
+        return providerService.create(provider);
     }
 
     @PutMapping("/{id}")
-    public Provider update(@PathVariable Long id, @RequestBody Provider provider) {
-        provider.setId(id);
-        return providerRepository.save(provider);
+    public ResponseEntity<Provider> update(@PathVariable Long id, @RequestBody Provider provider) {
+        return ResponseEntity.ok(providerService.update(id, provider));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        providerRepository.deleteById(id);
+        providerService.delete(id);
     }
 }

@@ -1,7 +1,9 @@
 package com.servicehub.controller;
 
 import com.servicehub.model.Client;
-import com.servicehub.repository.ClientRepository;
+import com.servicehub.service.ClientService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,35 +12,36 @@ import java.util.List;
 @RequestMapping("/clients")
 public class ClientController {
 
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
 
-    public ClientController(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
     }
 
     @GetMapping
     public List<Client> findAll() {
-        return clientRepository.findAll();
+        return clientService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Client findById(@PathVariable Long id) {
-        return clientRepository.findById(id).orElse(null);
+    public ResponseEntity<Client> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(clientService.findById(id));
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Client create(@RequestBody Client client) {
-        return clientRepository.save(client);
+        return clientService.create(client);
     }
 
     @PutMapping("/{id}")
-    public Client update(@PathVariable Long id, @RequestBody Client client) {
-        client.setId(id);
-        return clientRepository.save(client);
+    public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {
+        return ResponseEntity.ok(clientService.update(id, client));
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        clientRepository.deleteById(id);
+        clientService.delete(id);
     }
 }
