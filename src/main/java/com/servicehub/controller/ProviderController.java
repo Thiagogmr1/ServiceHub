@@ -5,6 +5,7 @@ import com.servicehub.service.ProviderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ProviderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Provider create(@RequestBody Provider provider) {
+    public Provider create(@Valid @RequestBody Provider provider) {
         return providerService.create(provider);
     }
 
