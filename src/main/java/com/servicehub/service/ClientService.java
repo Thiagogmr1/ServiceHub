@@ -36,6 +36,14 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
+    public Client patch(Long id, Client partial) {
+        Client existing = findById(id);
+        if (partial.getName() != null) existing.setName(partial.getName());
+        if (partial.getEmail() != null) existing.setEmail(partial.getEmail());
+        if (partial.getPhone() != null) existing.setPhone(partial.getPhone());
+        return clientRepository.save(existing);
+    }
+
     public void delete(Long id) {
         findById(id);
         clientRepository.deleteById(id);

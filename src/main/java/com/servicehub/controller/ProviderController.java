@@ -40,6 +40,11 @@ public class ProviderController {
         return ResponseEntity.ok(providerService.update(id, provider));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Provider> patch(@PathVariable Long id, @RequestBody Provider provider) {
+        return ResponseEntity.ok(providerService.patch(id, provider));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

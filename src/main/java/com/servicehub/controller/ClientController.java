@@ -39,6 +39,11 @@ public class ClientController {
         return ResponseEntity.ok(clientService.update(id, client));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Client> patch(@PathVariable Long id, @RequestBody Client client) {
+        return ResponseEntity.ok(clientService.patch(id, client));
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

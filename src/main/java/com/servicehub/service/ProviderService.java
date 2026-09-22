@@ -36,6 +36,15 @@ public class ProviderService {
         return providerRepository.save(provider);
     }
 
+    public Provider patch(Long id, Provider partial) {
+        Provider existing = findById(id);
+        if (partial.getName() != null) existing.setName(partial.getName());
+        if (partial.getEmail() != null) existing.setEmail(partial.getEmail());
+        if (partial.getPhone() != null) existing.setPhone(partial.getPhone());
+        if (partial.getService() != null) existing.setService(partial.getService());
+        return providerRepository.save(existing);
+    }
+
     public void delete(Long id) {
         findById(id); // lança 404 se não existir
         providerRepository.deleteById(id);
