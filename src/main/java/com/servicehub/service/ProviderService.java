@@ -1,7 +1,11 @@
 package com.servicehub.service;
 
+import com.servicehub.dto.ProviderPatchRequest;
+import com.servicehub.dto.ProviderRequest;
+import com.servicehub.dto.ProviderResponse;
 import com.servicehub.model.Provider;
 import com.servicehub.repository.ProviderRepository;
+import com.servicehub.util.InputSanitizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,36 +21,48 @@ public class ProviderService {
         this.providerRepository = providerRepository;
     }
 
-    public List<Provider> findAll() {
-        return providerRepository.findAll();
+    public List<ProviderResponse> findAll() {
+        return providerRepository.findAll().stream().map(ProviderResponse::from).toList();
     }
 
-    public Provider findById(Long id) {
-        return providerRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Provider não encontrado: " + id));
+    public ProviderResponse findById(Long id) {
+        return ProviderResponse.from(getOrThrow(id));
     }
 
-    public Provider create(Provider provider) {
-        return providerRepository.save(provider);
+    public ProviderResponse create(ProviderRequest request) {
+        Provider provider = new Provider();
+        provider.setName(InputSanitizer.sanitize(request.name()));
+        provider.setEmail(request.email());
+        provider.setPhone(InputSanitizer.sanitize(request.phone()));
+        provider.setService(InputSanitizer.sanitize(request.service()));
+        return ProviderResponse.from(providerRepository.save(provider));
     }
 
-    public Provider update(Long id, Provider provider) {
-        findById(id); // lança 404 se não existir
-        provider.setId(id);
-        return providerRepository.save(provider);
+    public ProviderResponse update(Long id, ProviderRequest request) {
+        Provider provider = getOrThrow(id);
+        provider.setName(InputSanitizer.sanitize(request.name()));
+        provider.setEmail(request.email());
+        provider.setPhone(InputSanitizer.sanitize(request.phone()));
+        provider.setService(InputSanitizer.sanitize(request.service()));
+        return ProviderResponse.from(providerRepository.save(provider));
     }
 
-    public Provider patch(Long id, Provider partial) {
-        Provider existing = findById(id);
-        if (partial.getName() != null) existing.setName(partial.getName());
-        if (partial.getEmail() != null) existing.setEmail(partial.getEmail());
-        if (partial.getPhone() != null) existing.setPhone(partial.getPhone());
-        if (partial.getService() != null) existing.setService(partial.getService());
-        return providerRepository.save(existing);
+    public ProviderResponse patch(Long id, ProviderPatchRequest request) {
+        Provider provider = getOrThrow(id);
+        if (request.name() != null) provider.setName(InputSanitizer.sanitize(request.name()));
+        if (request.email() != null) provider.setEmail(request.email());
+        if (request.phone() != null) provider.setPhone(InputSanitizer.sanitize(request.phone()));
+        if (request.service() != null) provider.setService(InputSanitizer.sanitize(request.service()));
+        return ProviderResponse.from(providerRepository.save(provider));
     }
 
     public void delete(Long id) {
-        findById(id); // lança 404 se não existir
+        getOrThrow(id);
         providerRepository.deleteById(id);
+    }
+
+    private Provider getOrThrow(Long id) {
+        return providerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Provider não encontrado: " + id));
     }
 }
