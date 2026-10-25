@@ -1,7 +1,11 @@
 package com.servicehub.service;
 
+import com.servicehub.dto.ClientPatchRequest;
+import com.servicehub.dto.ClientRequest;
+import com.servicehub.dto.ClientResponse;
 import com.servicehub.model.Client;
 import com.servicehub.repository.ClientRepository;
+import com.servicehub.util.InputSanitizer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,35 +21,45 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public List<Client> findAll() {
-        return clientRepository.findAll();
+    public List<ClientResponse> findAll() {
+        return clientRepository.findAll().stream().map(ClientResponse::from).toList();
     }
 
-    public Client findById(Long id) {
-        return clientRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client não encontrado: " + id));
+    public ClientResponse findById(Long id) {
+        return ClientResponse.from(getOrThrow(id));
     }
 
-    public Client create(Client client) {
-        return clientRepository.save(client);
+    public ClientResponse create(ClientRequest request) {
+        Client client = new Client();
+        client.setName(InputSanitizer.sanitize(request.name()));
+        client.setEmail(request.email());
+        client.setPhone(InputSanitizer.sanitize(request.phone()));
+        return ClientResponse.from(clientRepository.save(client));
     }
 
-    public Client update(Long id, Client client) {
-        findById(id);
-        client.setId(id);
-        return clientRepository.save(client);
+    public ClientResponse update(Long id, ClientRequest request) {
+        Client client = getOrThrow(id);
+        client.setName(InputSanitizer.sanitize(request.name()));
+        client.setEmail(request.email());
+        client.setPhone(InputSanitizer.sanitize(request.phone()));
+        return ClientResponse.from(clientRepository.save(client));
     }
 
-    public Client patch(Long id, Client partial) {
-        Client existing = findById(id);
-        if (partial.getName() != null) existing.setName(partial.getName());
-        if (partial.getEmail() != null) existing.setEmail(partial.getEmail());
-        if (partial.getPhone() != null) existing.setPhone(partial.getPhone());
-        return clientRepository.save(existing);
+    public ClientResponse patch(Long id, ClientPatchRequest request) {
+        Client client = getOrThrow(id);
+        if (request.name() != null) client.setName(InputSanitizer.sanitize(request.name()));
+        if (request.email() != null) client.setEmail(request.email());
+        if (request.phone() != null) client.setPhone(InputSanitizer.sanitize(request.phone()));
+        return ClientResponse.from(clientRepository.save(client));
     }
 
     public void delete(Long id) {
-        findById(id);
+        getOrThrow(id);
         clientRepository.deleteById(id);
+    }
+
+    private Client getOrThrow(Long id) {
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client não encontrado: " + id));
     }
 }

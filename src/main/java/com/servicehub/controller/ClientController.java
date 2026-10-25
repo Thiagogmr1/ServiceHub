@@ -1,15 +1,17 @@
 package com.servicehub.controller;
 
-import com.servicehub.model.Client;
+import com.servicehub.dto.ClientPatchRequest;
+import com.servicehub.dto.ClientRequest;
+import com.servicehub.dto.ClientResponse;
 import com.servicehub.service.ClientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/clients")
+@RequestMapping("/api/clients")
 public class ClientController {
 
     private final ClientService clientService;
@@ -19,29 +21,29 @@ public class ClientController {
     }
 
     @GetMapping
-    public List<Client> findAll() {
+    public List<ClientResponse> findAll() {
         return clientService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Client> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(clientService.findById(id));
+    public ClientResponse findById(@PathVariable Long id) {
+        return clientService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        return clientService.create(client);
+    public ClientResponse create(@Valid @RequestBody ClientRequest request) {
+        return clientService.create(request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {
-        return ResponseEntity.ok(clientService.update(id, client));
+    public ClientResponse update(@PathVariable Long id, @Valid @RequestBody ClientRequest request) {
+        return clientService.update(id, request);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Client> patch(@PathVariable Long id, @RequestBody Client client) {
-        return ResponseEntity.ok(clientService.patch(id, client));
+    public ClientResponse patch(@PathVariable Long id, @Valid @RequestBody ClientPatchRequest request) {
+        return clientService.patch(id, request);
     }
 
     @DeleteMapping("/{id}")

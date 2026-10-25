@@ -1,16 +1,17 @@
 package com.servicehub.controller;
 
-import com.servicehub.model.Provider;
+import com.servicehub.dto.ProviderPatchRequest;
+import com.servicehub.dto.ProviderRequest;
+import com.servicehub.dto.ProviderResponse;
 import com.servicehub.service.ProviderService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/providers")
+@RequestMapping("/api/providers")
 public class ProviderController {
 
     private final ProviderService providerService;
@@ -20,29 +21,29 @@ public class ProviderController {
     }
 
     @GetMapping
-    public List<Provider> findAll() {
+    public List<ProviderResponse> findAll() {
         return providerService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Provider> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(providerService.findById(id));
+    public ProviderResponse findById(@PathVariable Long id) {
+        return providerService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Provider create(@Valid @RequestBody Provider provider) {
-        return providerService.create(provider);
+    public ProviderResponse create(@Valid @RequestBody ProviderRequest request) {
+        return providerService.create(request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Provider> update(@PathVariable Long id, @RequestBody Provider provider) {
-        return ResponseEntity.ok(providerService.update(id, provider));
+    public ProviderResponse update(@PathVariable Long id, @Valid @RequestBody ProviderRequest request) {
+        return providerService.update(id, request);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Provider> patch(@PathVariable Long id, @RequestBody Provider provider) {
-        return ResponseEntity.ok(providerService.patch(id, provider));
+    public ProviderResponse patch(@PathVariable Long id, @Valid @RequestBody ProviderPatchRequest request) {
+        return providerService.patch(id, request);
     }
 
     @DeleteMapping("/{id}")
