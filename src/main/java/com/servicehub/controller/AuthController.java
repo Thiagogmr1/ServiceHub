@@ -1,5 +1,7 @@
 package com.servicehub.controller;
 
+import com.servicehub.dto.AuthResponse;
+import com.servicehub.dto.LoginRequest;
 import com.servicehub.dto.RegisterRequest;
 import com.servicehub.dto.UserResponse;
 import com.servicehub.service.AuthService;
@@ -21,5 +23,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
