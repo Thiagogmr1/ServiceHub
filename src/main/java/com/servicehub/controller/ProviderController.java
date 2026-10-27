@@ -6,6 +6,7 @@ import com.servicehub.dto.ProviderResponse;
 import com.servicehub.service.ProviderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,22 +33,26 @@ public class ProviderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ProviderResponse create(@Valid @RequestBody ProviderRequest request) {
         return providerService.create(request);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ProviderResponse update(@PathVariable Long id, @Valid @RequestBody ProviderRequest request) {
         return providerService.update(id, request);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ProviderResponse patch(@PathVariable Long id, @Valid @RequestBody ProviderPatchRequest request) {
         return providerService.patch(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         providerService.delete(id);
     }
